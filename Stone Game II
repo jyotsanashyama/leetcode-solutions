@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int stoneGameII(vector<int>& piles) {
+        int n=piles.size();
+
+        vector<vector<int>> dp(n, vector<int>(n+1,0));
+        vector<int> suffixSum(n,0);  ///stores sum of elements in piles from i to end
+        suffixSum[n-1]=piles[n-1];  
+
+        ///calculating sum of the current pile and all the piles that come after it.
+        for(int i=n-2;i>=0;i--){
+            suffixSum[i] = suffixSum[i+1]+piles[i];  
+        }
+
+        ///dp array
+        ///2M=max no of piles
+        for(int i=n-1;i>=0;i--){   ///iterates backward through the piles (dp)
+            for(int m=1;m<=n;m++){  ///iterates over possible values of M
+                
+                ///base case: if curr index + max no of piles are greater than size, then curr player can take all plies onwards
+                if (i + 2 * m >= n) {
+                    dp[i][m] = suffixSum[i];  ///calc max no of stones from i to m
+                }
+
+                /// consider all possible choices of x
+                else {
+                    for (int x = 1; x <= 2 * m; x++) {
+                        dp[i][m] = max(dp[i][m], suffixSum[i] - dp[i + x][max(m, x)]);
+                    }
+                }
+            }
+        }
+
+        return dp[0][1];
+
+
+    }
+};
